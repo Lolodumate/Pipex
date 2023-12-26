@@ -1,4 +1,4 @@
-#include <unistd.h>
+#include "pipex.h"
 
 /*  Source : https://csnotes.medium.com/pipex-tutorial-42-project-4469f5dd5901
  *
@@ -15,73 +15,40 @@
  *  -------------------------------------------------------------------------------------------------
  *  dup2() can swap our fds to stdin/stdout.
  *  dup2() close fd2 and duplicate the value of fd2 to fd1 or it will redirect fd1 to fd2.
- *
- *
- *
  */
 
-void	child_process(int f1, int cmd1)
+// compiler avec les flags pour checker les fd : valgrind --leak-check=full --track-fds=yes --trace-children=yes ./pipex /dev/stdin "cat" "ls" /dev/stdout
+int	main(int argc, char **argv, char **envp)
 {
-	// add protection if dup2() < 0
-	// dup2() close stdin, f1 becomes the new stdin
-	dup2(f1, STDIN_FILENO); // we want f1 to execve() input
-	dup2(end[1], STDOUT_FILENO); // we want end[1] to be execve() stdout
-	close(end[0]); // Always close the end of the pipe you don't use !
-	close(f1);
-	// execve function for each possible path
-	exit(EXIT_FAILURE);
-}
+	(void)argc;
+	(void)argv;
+	t_pipex	*p;
+	int		i = 0;
 
-void	parent_process(int f2, int cmd2)
-{
-	int		status;
-
-	status = 0;
-	waitpid(-1, &status, 0); // To wait for the child to finish his process.
-	dup2(f2, ...); // f2 is the stdout.
-	dup2(end[0], ...); // end[0] is the stdin.
-	close(end[1]);
-	close(f2);
-	// execve function for each possible path
-	exit(EXIT_FAILURE);
-}
-
-//-----------------------------------------------------------------------------------------------------
-// With the right stdin and stdout, we can execute the command with execve()
-int	execve(const char *path, char const **argv, char **envp);
-/*	path : the path to our command ("which ls" and "which wc").
- *	argv : the arguments the command needs (for example "ls -la"). Tips : use ft_split to obtain a char **.
- *	envp : the environment variable. Retrieve it in the line named PATH with ft_substr and ft_split and then pass it into execve.
- *
- *
- */
-
-
-void	pipex(int f1, int f2, char **argv, char **envp)
-{
-	int		end[2];
-	pid_t	parent;
-
-	pipe(end);
-	parent = fork(); // fork() splits the process in two sub_processes : returns 0 for child process, 1 for parent process, -1 for error.
-	if (parent < 0)
-		return (perror("Fork: "));
-	if (!parent)
-		child_process(f1, cmd1);
-	else
-		parent_process(f2, cmd2);
-}
-
-int	main(int argc, char **argv)
-{
-	int		f1;
-	int		f2;
-
+	p = NULL;
 	// La commande ls -la /proc/$$/fd permet de verifier les fd actuellement ouverts.
 	// Important : fd has to be closed before beginning the parent process.
-	if (argc >= 4)
+//	if (argc >= 2)
 	{
-		pipex(f1, f2);
-	}
+		p = init_pipex(p);
+		p->paths = get_paths(envp);
+//		check_argv(argv);
+//		printf("envp = %s", envp[21]);
+		printf("\n*********************************\n");
+		printf("argv[2] = %s\n", argv[2]);
+		while (p->paths[i])
+		{
+			printf("%s\n", p->paths[i]);
+			i++;
+		}
+		exec_command(p->paths, argv[2]);
+/*		parse_commands();
+		parse_argv();
+		while (commands)
+			execute();
+		clean_memory();
+*/	}
+	clean(p->paths);
+	free(p);
 	return (0);
 }
