@@ -26,6 +26,8 @@ typedef struct s_pipex
 
 int			check_argv(char **argv);
 int			create_process(pid_t pid);
+int			dup_fd_out(char *file, t_pipex *p, char *cmd);
+int			dup_fd_in(char *file, t_pipex *p, char *cmd);
 int			parse_commands();
 int			parse_argv();
 int			find_path(char **envp, char *to_find);
@@ -34,9 +36,10 @@ char	**check_backslash(char **paths);
 char	**get_paths(char **envp);
 void	child_process(int f1, int cmd1);
 void	clean(char **paths);
+void	ft_pipe(int fd[2], pid_t pid, t_pipex *p, char **argv);
 void	parent_process(int f2, int cmd2);
 t_pipex	*init_pipex(t_pipex *p);
-void	pipex(int f1, int f2, char **argv, char **envp);
+void	pipex(char **argv, t_pipex *p);
 int	exec_command(char **paths, char *argv);
 void	clean_memory();
 

@@ -21,15 +21,11 @@ int	find_path(char **envp, char *to_find)
 	i = 0;
 	if (to_find == NULL)
 		return (-1);
-	printf("envp[i] = %s\n", envp[i]);
+//	printf("envp[i] = %s\n", envp[i]);
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], to_find, 5) == 0)
-		{	
-			printf("FIND !! i = %d\n", i);
 			return (i);
-		}
-		printf("envp[%d] = %s\n", i, envp[i]);
 		i++;
 	}
 	printf("NOT FIND !!!\n");

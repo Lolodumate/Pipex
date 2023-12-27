@@ -17,6 +17,7 @@ SRC =	main.c \
 	utils.c \
 	init.c \
 	parsing.c \
+	pipex.c \
 
 CC =	gcc
 

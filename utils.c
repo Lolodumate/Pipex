@@ -1,15 +1,26 @@
 #include "pipex.h"
-/*
-int	dup_fd(char *file, char *path, char **argv)
+
+int	dup_fd_out(char *file, t_pipex *p, char *cmd)
 {
 	int		fd;
 
 	fd = open(file, O_WRONLY | O_CREAT, 0644);
 	dup2(fd, STDOUT_FILENO);
 	close(fd);
-	exec_command(path, argv);
+	exec_command(p->paths, cmd);
 	return (0);
-}*/
+}
+
+int	dup_fd_in(char *file, t_pipex *p, char *cmd)
+{
+	int		fd;
+
+	fd = open(file, O_RDONLY, 0644);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	exec_command(p->paths, cmd);
+	return (0);
+}
 
 int	exec_command(char **paths, char *argv)
 {
@@ -22,57 +33,70 @@ int	exec_command(char **paths, char *argv)
 	cmd = ft_split(argv, ' ');
 	while (paths[j])
 	{
-		try_path = ft_strjoin(paths[j], argv);
-//		printf("path[%d] = %s\n", j, paths[j]);
-//		printf("argv[2] = %s\n", argv);
-		printf("try_path = %s\n", try_path);
+		try_path = ft_strjoin(paths[j], cmd[0]);
 		execve(try_path, cmd, NULL);
 		free(try_path);
 		j++;
 	}
-	j = 0;
-	while(cmd[j])
-	{
-		free(cmd[j]);
-		j++;
-	}
-	free(cmd);
-	printf("This line will not be executed.\n");
+	clean(cmd);
+//	printf("This line will not be executed.\n");
 	return (0);
 }
 
-void	ft_pipe(int fd[2], pid_t pid)
+void	ft_pipe(int fd[2], pid_t pid, t_pipex *p, char **argv)
 {
-	char	buffer[13];
+	char	buffer[1];
 
 	if (pipe(fd) == -1)
 	{
 		perror("Error pipe");
 		exit(EXIT_FAILURE);
 	}
-	pid = fork();
 	if (pid == -1)
 	{
 		perror("Error fork");
 		exit(EXIT_FAILURE);
 	}
-	if (pid == 0)
+	if (pid == 0) // Child process
 	{
-		close(fd[0]);
-		write(fd[1], "Hello parent!", 13);
-		close(fd[1]);
+		if (close(fd[0]) == -1)
+		{
+			printf("Child process - Erreur close(fd[0])\n");
+			exit(EXIT_FAILURE);
+		}
+//		write(fd[1], "Hello parent!", 13);
+		dup_fd_out(argv[1], p, argv[2]);
+		if (close(fd[1]) == -1)
+		{
+			printf("Child process - Erreur close(fd[1])\n");
+			exit(EXIT_FAILURE);
+		}
+		// execve ici ?
 		exit(EXIT_SUCCESS);
 	}
-	else
+	else // pid > 0 : Parent process
 	{
-		close(fd[1]);
-		read(fd[0], buffer, 13);
-		close(fd[0]);
-		printf("Message from child : '%s'\n", buffer);
+		if (close(fd[1]) == -1)
+		{
+			printf("Parent process - Erreur close(fd[1])\n");
+			exit(EXIT_FAILURE);
+		}
+		read(fd[0], buffer, 1);
+		dup_fd_in(argv[4], p, argv[3]);
+		if (close(fd[0]) == -1)
+		{
+			printf("Parent process - Erreur close(fd[0])\n");
+			exit(EXIT_FAILURE);
+		}
+		read(fd[0], buffer, 1);
+		// execve ici ?
+//		printf("Message from child : '%s'\n", buffer);
 		exit(EXIT_SUCCESS);
 	}
 }
 
+// Removes a file from the file system. It returns -1 if an error occurs.
+/*
 int	unlink_file(char *path_file)
 {
 	if (unlink(path_file) == 0)
@@ -84,7 +108,7 @@ int	unlink_file(char *path_file)
 		printf("Error deleting file.\n");
 	return (-1);
 }
-
+*/
 /*	File descriptors ;
  *	0 stdin
  *	1 stdout
@@ -94,6 +118,7 @@ int	unlink_file(char *path_file)
  *	5 end[0]
  *	6 end[1]
  */
+/*
 void	pipex(int f1, int f2, char **argv, char **envp)
 {
 	int		end[2];
@@ -115,4 +140,4 @@ void	pipex(int f1, int f2, char **argv, char **envp)
 		parent_process(f2, cmd2);
 	printf("%s", envp[1]);
 	printf("%s", argv[1]);
-}
+}*/

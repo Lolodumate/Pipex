@@ -1,14 +1,16 @@
 #include "pipex.h"
 
-void	clean(char **paths)
+void	clean(char **str)
 {
 	int		i;
 
 	i = 0;
-	while (paths[i])
+	while (str[i])
 	{
-		free(paths[i]);
+		free(str[i]);
+		printf("Clean str[%d] %s OK\n", i, str[i]);
 		i++;
 	}
-	free(paths);
+	free(str);
+	printf("Clean str OK\n");
 }

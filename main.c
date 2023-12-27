@@ -23,31 +23,15 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	t_pipex	*p;
-	int		i = 0;
 
 	p = NULL;
 	// La commande ls -la /proc/$$/fd permet de verifier les fd actuellement ouverts.
 	// Important : fd has to be closed before beginning the parent process.
 //	if (argc >= 2)
-	{
-		p = init_pipex(p);
-		p->paths = get_paths(envp);
-//		check_argv(argv);
-//		printf("envp = %s", envp[21]);
-		printf("\n*********************************\n");
-		printf("argv[2] = %s\n", argv[2]);
-		while (p->paths[i])
-		{
-			printf("%s\n", p->paths[i]);
-			i++;
-		}
-		exec_command(p->paths, argv[2]);
-/*		parse_commands();
-		parse_argv();
-		while (commands)
-			execute();
-		clean_memory();
-*/	}
+	p = init_pipex(p);
+	p->paths = get_paths(envp);
+	pipex(argv, p);	
+	
 	clean(p->paths);
 	free(p);
 	return (0);
