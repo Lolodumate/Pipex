@@ -1,5 +1,5 @@
 #include "pipex.h"
-
+/*
 int	create_process(pid_t pid)
 {
 	pid = fork(); // Creation du processus fils
@@ -24,49 +24,52 @@ int	get_process(pid_t pid) // pid == fork();
 	else
 		printf("This is the parent process (pid : %d)\n", getpid());
 	return (0);
-}
+}*/
 /* For child process :
  * infile has to be the stdin (as input)
  * end[1] has to be the stdout (we write to end[1] the output of cmd1)
  */
-void	child_process(int f1, int cmd1)
-{
-	int		end[2] = {0};
 
-	// add protection if dup2() < 0
-	// dup2() close stdin, f1 becomes the new stdin
-	dup2(f1, STDIN_FILENO); // we want f1 to execve() input
-	dup2(end[1], STDOUT_FILENO); // we want end[1] to be execve() stdout
+// Command 1
+void	child_process(char **argv, char *cmd, int *end, t_pipex *p)
+{
+	int		fd;
+
+	if (!argv || !argv[1])
+	{
+		exit(EXIT_FAILURE);
+	}
+	fd = open(argv[1], O_RDONLY, 0644); // 0777 au lieu de 0644
+        if (fd == -1)
+		exit(EXIT_FAILURE);
+	dup2(fd, STDIN_FILENO); // we want fd to execve() input
+	close(fd);
 	close(end[0]); // Always close the end of the pipe you don't use !
-	close(f1);
-	printf("%d", cmd1);
-	// execve function for each possible path
-	exit(EXIT_FAILURE);
+	dup2(end[1], STDOUT_FILENO); // we want end[1] to be execve() stdout
+	exec_command(p->paths, cmd);
 }
 
 /* For parent process :
  * end[0] has to be the stdin (end[0] reads from end[1] the output of cmd1)
  * outfile has to be the stdout(we write to it the output of cmd2)
  */
-void	parent_process(int f2, int cmd2)
+void	parent_process(char **argv, char *cmd, int *end, t_pipex *p)
 {
 	int		status;
-	int		end[2] = {0};
-//	int		f1;
+	int		fd;
 
-	status = 0;
 	waitpid(-1, &status, 0); // To wait for the child to finish his process.
-	
-	f2 = open("example.txt", O_WRONLY | O_CREAT, 0644);
-	if (f2 == -1)
-		exit(EXIT_FAILURE);
-	dup2(f2, STDOUT_FILENO); // f2 is the stdout.
-	dup2(end[0], STDIN_FILENO); // end[0] is the stdin.
 	close(end[1]);
-	close(f2);
-	printf("%d", cmd2);
-	// execve function for each possible path
-	exit(EXIT_FAILURE);
+	if (!argv || !argv[4])
+		exit(EXIT_FAILURE);
+	fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+		exit(EXIT_FAILURE);
+	dup2(fd, STDOUT_FILENO); // f2 is the stdout.
+	dup2(end[0], STDIN_FILENO); // end[0] is the stdin.
+	close(end[0]);
+	close(fd);
+	exec_command(p->paths, cmd);
 }
 
 int	wait_process(pid_t pid)

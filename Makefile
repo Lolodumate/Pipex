@@ -21,7 +21,7 @@ SRC =	main.c \
 
 CC =	gcc
 
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g3
 
 OBJ =	$(SRC:.c=.o)
 

@@ -1,28 +1,33 @@
 #include "pipex.h"
-
+/*
 int	dup_fd_out(char *file, t_pipex *p, char *cmd)
 {
 	int		fd;
 
-	fd = open(file, O_WRONLY | O_CREAT, 0644);
+	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777); // 0777 au lieu de 0644
+	if (fd == -1)
+		exit(EXIT_FAILURE);
 	dup2(fd, STDOUT_FILENO);
 	close(fd);
 	exec_command(p->paths, cmd);
 	return (0);
 }
-
+*/
+/*
 int	dup_fd_in(char *file, t_pipex *p, char *cmd)
 {
 	int		fd;
 
-	fd = open(file, O_RDONLY, 0644);
+	fd = open(file, O_RDONLY, 0777); // 0777 au lieu de 0644
+	if (fd == -1)
+		exit(EXIT_FAILURE);
 	dup2(fd, STDIN_FILENO);
 	close(fd);
 	exec_command(p->paths, cmd);
 	return (0);
 }
-
-int	exec_command(char **paths, char *argv)
+*/
+void	exec_command(char **paths, char *argv)
 {
 	int		j;
 	char	**cmd;
@@ -39,15 +44,17 @@ int	exec_command(char **paths, char *argv)
 		j++;
 	}
 	clean(cmd);
-//	printf("This line will not be executed.\n");
-	return (0);
+	perror("No path");
+	exit(EXIT_FAILURE);
 }
 
-void	ft_pipe(int fd[2], pid_t pid, t_pipex *p, char **argv)
+void	ft_pipe(t_pipex *p, char **argv)
 {
-	char	buffer[1];
+	int		end[2];
+	pid_t	pid;
 
-	if (pipe(fd) == -1)
+	pid = fork();
+	if (pipe(end) == -1)
 	{
 		perror("Error pipe");
 		exit(EXIT_FAILURE);
@@ -59,38 +66,34 @@ void	ft_pipe(int fd[2], pid_t pid, t_pipex *p, char **argv)
 	}
 	if (pid == 0) // Child process
 	{
-		if (close(fd[0]) == -1)
+/*		if (close(end[0]) == -1)
 		{
 			printf("Child process - Erreur close(fd[0])\n");
 			exit(EXIT_FAILURE);
-		}
-//		write(fd[1], "Hello parent!", 13);
-		dup_fd_out(argv[1], p, argv[2]);
-		if (close(fd[1]) == -1)
+		}*/
+//		dup_fd_out(argv[1], p, argv[2]);
+		child_process(argv, argv[2], end, p);
+/*		if (close(end[1]) == -1)
 		{
 			printf("Child process - Erreur close(fd[1])\n");
 			exit(EXIT_FAILURE);
-		}
-		// execve ici ?
+		}*/
 		exit(EXIT_SUCCESS);
 	}
 	else // pid > 0 : Parent process
 	{
-		if (close(fd[1]) == -1)
+/*		if (close(end[1]) == -1)
 		{
 			printf("Parent process - Erreur close(fd[1])\n");
 			exit(EXIT_FAILURE);
-		}
-		read(fd[0], buffer, 1);
-		dup_fd_in(argv[4], p, argv[3]);
-		if (close(fd[0]) == -1)
+		}*/
+		parent_process(argv, argv[3], end, p);
+//		dup_fd_in(argv[4], p, argv[3]);
+/*		if (close(end[0]) == -1)
 		{
 			printf("Parent process - Erreur close(fd[0])\n");
 			exit(EXIT_FAILURE);
-		}
-		read(fd[0], buffer, 1);
-		// execve ici ?
-//		printf("Message from child : '%s'\n", buffer);
+		}*/
 		exit(EXIT_SUCCESS);
 	}
 }

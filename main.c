@@ -17,22 +17,54 @@
  *  dup2() close fd2 and duplicate the value of fd2 to fd1 or it will redirect fd1 to fd2.
  */
 
+// valgrind --log-file="filename" et n hesite pas a aussi mettre --track-fds=yes --trace-children=yes pour le projet on sait jamais 🙂 
+
 // compiler avec les flags pour checker les fd : valgrind --leak-check=full --track-fds=yes --trace-children=yes ./pipex /dev/stdin "cat" "ls" /dev/stdout
 int	main(int argc, char **argv, char **envp)
 {
-	(void)argc;
-	(void)argv;
+	int		end[2];
 	t_pipex	*p;
+	pid_t	pid;
 
 	p = NULL;
-	// La commande ls -la /proc/$$/fd permet de verifier les fd actuellement ouverts.
-	// Important : fd has to be closed before beginning the parent process.
-//	if (argc >= 2)
 	p = init_pipex(p);
 	p->paths = get_paths(envp);
-	pipex(argv, p);	
-	
-	clean(p->paths);
-	free(p);
+	// La commande ls -la /proc/$$/fd permet de verifier les fd actuellement ouverts.
+	// Important : fd has to be closed before beginning the parent process.
+	if (argc == 5)
+	{
+		if (pipe(end) == -1)
+		{
+			perror("Error pipe\n");
+			clean(p->paths);
+			free(p);
+			close(end[0]);
+			close(end[1]);
+			exit(EXIT_FAILURE);
+		}
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("Error pid\n");
+			exit(EXIT_FAILURE);
+		}
+		if (pid == 0) 
+		{
+			child_process(argv, argv[2], end, p);
+		}
+		else
+		{
+			parent_process(argv, argv[3], end, p);
+	//		clean(p->paths);
+	//		free(p);
+	//		waitpid(pid, NULL, 0);
+		}
+	}
+	else
+	{
+		clean(p->paths);
+		free(p);
+		exit(EXIT_FAILURE);
+	}
 	return (0);
 }

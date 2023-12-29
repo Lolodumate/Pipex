@@ -19,7 +19,7 @@ int	find_path(char **envp, char *to_find)
 	int		i;
 
 	i = 0;
-	if (to_find == NULL)
+	if (to_find == NULL || envp == NULL)
 		return (-1);
 //	printf("envp[i] = %s\n", envp[i]);
 	while (envp[i])
@@ -37,6 +37,8 @@ char	*add_backslash(char *path)
 {
 	int		len;
 
+	if (path == NULL)
+		return (NULL);
 	len = ft_strlen(path);
 	if (path[len - 1] != '/')
 		path = ft_strjoin(path, "/");
@@ -64,9 +66,15 @@ char	**get_paths(char **envp)
 	char	**paths;
 
 	i = find_path(envp, "PATH=");
+	if (i == -1)
+		return (NULL);
 	path = ft_substr(envp[i], 5, ft_strlen(envp[i]));
+	if (path == NULL)
+		return (NULL);
 	paths = ft_split(path, ':');
-	paths = check_backslash(paths);
 	free(path);
+	if (paths == NULL)
+		return (NULL);
+	paths = check_backslash(paths);
 	return (paths);
 }

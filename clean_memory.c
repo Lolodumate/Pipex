@@ -8,9 +8,9 @@ void	clean(char **str)
 	while (str[i])
 	{
 		free(str[i]);
-		printf("Clean str[%d] %s OK\n", i, str[i]);
+//		printf("Clean str[%d] %s OK\n", i, str[i]);
 		i++;
 	}
 	free(str);
-	printf("Clean str OK\n");
+//	printf("Clean str OK\n");
 }
