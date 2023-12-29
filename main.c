@@ -49,16 +49,9 @@ int	main(int argc, char **argv, char **envp)
 			exit(EXIT_FAILURE);
 		}
 		if (pid == 0) 
-		{
 			child_process(argv, argv[2], end, p);
-		}
 		else
-		{
 			parent_process(argv, argv[3], end, p);
-	//		clean(p->paths);
-	//		free(p);
-	//		waitpid(pid, NULL, 0);
-		}
 	}
 	else
 	{

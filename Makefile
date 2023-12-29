@@ -27,9 +27,13 @@ OBJ =	$(SRC:.c=.o)
 
 NAME =	./pipex
 
+NAMEPRINTF =	libftprintf.a
+
 NAMELIBFT =	libft.a
 
 NAMEGNL =	get_next_line.a
+
+INCLUDEPRINTF =	./ft_printf/
 
 INCLUDELIBFT =	./libft/
 
@@ -38,18 +42,22 @@ INCLUDEGNL =	./getnextline/
 all: $(NAME)
 
 %.o : %.c pipex.h
-	$(CC) $(CFLAGS) -I $(INCLUDELIBFT) -I $(INCLUDEGNL) -c $< -o $(<:.c=.o)
+	$(CC) $(CFLAGS) -I $(INCLUDEPRINTF) -I $(INCLUDELIBFT) -I $(INCLUDEGNL) -c $< -o $(<:.c=.o)
 
 $(NAME): $(OBJ)
+	make -C ft_printf
 	make -C libft
 	make -C getnextline
+	cp $(INCLUDEPRINTF)$(NAMEPRINTF) .
 	cp $(INCLUDELIBFT)$(NAMELIBFT) .
 	cp $(INCLUDEGNL)$(NAMEGNL) .
-	$(CC) $(CFLAGS) $(OBJ) -I $(INCLUDELIBFT) $(NAMELIBFT) -I $(INCLUDEGNL) $(NAMEGNL) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -I $(INCLUDEPRINTF) $(NAMEPRINTF) -I $(INCLUDELIBFT) $(NAMELIBFT) -I $(INCLUDEGNL) $(NAMEGNL) -o $(NAME)
 
 clean:
+	make clean -C ft_printf
 	make clean -C libft
 	make clean -C getnextline
+	rm -f $(OBJ) $(NAMEPRINTF) $(INCLUDEPRINTF)$(NAMEPRINTF)
 	rm -f $(OBJ) $(NAMELIBFT) $(INCLUDELIBFT)$(NAMELIBFT)
 	rm -f $(OBJ) $(NAMEGNL) $(INCLUDEGNL)$(NAMEGNL)
 

@@ -1,32 +1,5 @@
 #include "pipex.h"
-/*
-int	dup_fd_out(char *file, t_pipex *p, char *cmd)
-{
-	int		fd;
 
-	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777); // 0777 au lieu de 0644
-	if (fd == -1)
-		exit(EXIT_FAILURE);
-	dup2(fd, STDOUT_FILENO);
-	close(fd);
-	exec_command(p->paths, cmd);
-	return (0);
-}
-*/
-/*
-int	dup_fd_in(char *file, t_pipex *p, char *cmd)
-{
-	int		fd;
-
-	fd = open(file, O_RDONLY, 0777); // 0777 au lieu de 0644
-	if (fd == -1)
-		exit(EXIT_FAILURE);
-	dup2(fd, STDIN_FILENO);
-	close(fd);
-	exec_command(p->paths, cmd);
-	return (0);
-}
-*/
 void	exec_command(char **paths, char *argv)
 {
 	int		j;

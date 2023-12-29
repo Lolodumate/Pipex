@@ -28,7 +28,8 @@ int	find_path(char **envp, char *to_find)
 			return (i);
 		i++;
 	}
-	printf("NOT FIND !!!\n");
+	
+	ft_printf("-bash: %s: No such file or directory\n", "test");
 	return (0);
 }
 

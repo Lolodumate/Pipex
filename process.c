@@ -1,36 +1,10 @@
 #include "pipex.h"
-/*
-int	create_process(pid_t pid)
-{
-	pid = fork(); // Creation du processus fils
-	if (pid == -1) // Erreur
-		return (1);
-	if (pid == 0)
-		printf("Processus fils cree. PID = %d\n", pid);
-	else if (pid > 0)
-		printf("Processus pere cree. PID = %d\n", pid);
-	return (0);
-}
 
-int	get_process(pid_t pid) // pid == fork();
-{
-	if (pid == -1)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
-	}
-	if (pid == 0)
-		printf("This is the child process (pid : %d)\n", getpid());
-	else
-		printf("This is the parent process (pid : %d)\n", getpid());
-	return (0);
-}*/
 /* For child process :
  * infile has to be the stdin (as input)
  * end[1] has to be the stdout (we write to end[1] the output of cmd1)
  */
 
-// Command 1
 void	child_process(char **argv, char *cmd, int *end, t_pipex *p)
 {
 	int		fd;
