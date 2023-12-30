@@ -1,19 +1,5 @@
 #include "pipex.h"
 
-// /usr/bin/echo
-/*void	get_path(char **argv)
-{
-	exec_command("/usr/bin/echo", argv);
-}*/
-/*
-int	main(int argc, char **argv)
-{
-	(void)argc;
-	dup_fd("testfile", "/usr/bin/echo", argv);
-*/	//get_path(argv);
-/*	return (0);
-}*/
-
 int	find_path(char **envp, char *to_find)
 {
 	int		i;
@@ -21,7 +7,6 @@ int	find_path(char **envp, char *to_find)
 	i = 0;
 	if (to_find == NULL || envp == NULL)
 		return (-1);
-//	printf("envp[i] = %s\n", envp[i]);
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], to_find, 5) == 0)
@@ -38,6 +23,7 @@ char	*add_backslash(char *path)
 {
 	int		len;
 
+	len = 0;
 	if (path == NULL)
 		return (NULL);
 	len = ft_strlen(path);
@@ -52,6 +38,8 @@ char	**check_backslash(char **paths)
 	int		i;
 
 	i = 0;
+	if (paths == NULL)
+		return (NULL);
 	while (paths[i])
 	{
 		paths[i] = add_backslash(paths[i]);
@@ -59,7 +47,15 @@ char	**check_backslash(char **paths)
 	}
 	return (paths);
 }
+/*
+int	get_len_path(char *path)
+{
+	int		len;
 
+	len = ft_strlen(path) - 5;
+	return (len);
+}
+*/
 char	**get_paths(char **envp)
 {
 	int		i;
@@ -69,10 +65,12 @@ char	**get_paths(char **envp)
 	i = find_path(envp, "PATH=");
 	if (i == -1)
 		return (NULL);
-	path = ft_substr(envp[i], 5, ft_strlen(envp[i]));
+	path = ft_substr(envp[i], 5, ft_strlen(envp[i]) + 1);
+//	path = ft_calloc(sizeof(char), get_len_path(envp[i]) + 1);
 	if (path == NULL)
 		return (NULL);
 	paths = ft_split(path, ':');
+//	paths = path_split(path);
 	free(path);
 	if (paths == NULL)
 		return (NULL);

@@ -27,12 +27,17 @@ int	main(int argc, char **argv, char **envp)
 	pid_t	pid;
 
 	p = NULL;
-	p = init_pipex(p);
-	p->paths = get_paths(envp);
 	// La commande ls -la /proc/$$/fd permet de verifier les fd actuellement ouverts.
 	// Important : fd has to be closed before beginning the parent process.
 	if (argc == 5)
 	{
+		p = init_pipex(p);
+		p->paths = get_paths(envp);
+		if (p->paths == NULL)
+		{
+			free(p);
+			exit(EXIT_FAILURE);
+		}
 		if (pipe(end) == -1)
 		{
 			perror("Error pipe\n");
@@ -43,21 +48,7 @@ int	main(int argc, char **argv, char **envp)
 			exit(EXIT_FAILURE);
 		}
 		pid = fork();
-		if (pid == -1)
-		{
-			perror("Error pid\n");
-			exit(EXIT_FAILURE);
-		}
-		if (pid == 0) 
-			child_process(argv, argv[2], end, p);
-		else
-			parent_process(argv, argv[3], end, p);
-	}
-	else
-	{
-		clean(p->paths);
-		free(p);
-		exit(EXIT_FAILURE);
+		pipex(argv, end, p, pid);
 	}
 	return (0);
 }
