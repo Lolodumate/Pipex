@@ -15,11 +15,14 @@
  *  -------------------------------------------------------------------------------------------------
  *  dup2() can swap our fds to stdin/stdout.
  *  dup2() close fd2 and duplicate the value of fd2 to fd1 or it will redirect fd1 to fd2.
+ * La commande ls -la /proc/$$/fd permet de verifier les fd actuellement ouverts.
+ * Important : fd has to be closed before beginning the parent process.
+ * --log-file="filename"
+ * --track-fds=yes
+ * --trace-children=yes
+ * compiler avec les flags pour checker les fd : valgrind --leak-check=full --track-fds=yes --trace-children=yes ./pipex /dev/stdin "cat" "ls" /dev/stdout
  */
 
-// valgrind --log-file="filename" et n hesite pas a aussi mettre --track-fds=yes --trace-children=yes pour le projet on sait jamais 🙂 
-
-// compiler avec les flags pour checker les fd : valgrind --leak-check=full --track-fds=yes --trace-children=yes ./pipex /dev/stdin "cat" "ls" /dev/stdout
 int	main(int argc, char **argv, char **envp)
 {
 	int		end[2];
@@ -27,8 +30,6 @@ int	main(int argc, char **argv, char **envp)
 	pid_t	pid;
 
 	p = NULL;
-	// La commande ls -la /proc/$$/fd permet de verifier les fd actuellement ouverts.
-	// Important : fd has to be closed before beginning the parent process.
 	if (argc == 5)
 	{
 		p = init_pipex(p);

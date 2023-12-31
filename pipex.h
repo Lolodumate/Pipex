@@ -43,7 +43,7 @@ void	parent_process(char **argv, char *cmd, int *end, t_pipex *p);
 void	clean(char **paths);
 t_pipex	*init_pipex(t_pipex *p);
 void	pipex(char **argv, int *end, t_pipex *p, pid_t pid);
-void	exec_command(char **paths, char *argv);
+void	exec_command(char **paths, char *argv, t_pipex *p);
 void	clean_memory();
 
 #endif

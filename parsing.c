@@ -13,8 +13,6 @@ int	find_path(char **envp, char *to_find)
 			return (i);
 		i++;
 	}
-	
-	ft_printf("-bash: %s: No such file or directory\n", "test");
 	return (0);
 }
 
@@ -47,15 +45,7 @@ char	**check_backslash(char **paths)
 	}
 	return (paths);
 }
-/*
-int	get_len_path(char *path)
-{
-	int		len;
 
-	len = ft_strlen(path) - 5;
-	return (len);
-}
-*/
 char	**get_paths(char **envp)
 {
 	int		i;
@@ -66,11 +56,9 @@ char	**get_paths(char **envp)
 	if (i == -1)
 		return (NULL);
 	path = ft_substr(envp[i], 5, ft_strlen(envp[i]) + 1);
-//	path = ft_calloc(sizeof(char), get_len_path(envp[i]) + 1);
 	if (path == NULL)
 		return (NULL);
 	paths = ft_split(path, ':');
-//	paths = path_split(path);
 	free(path);
 	if (paths == NULL)
 		return (NULL);
