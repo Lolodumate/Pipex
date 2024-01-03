@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: laroges <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/03 20:02:49 by laroges           #+#    #+#             */
+/*   Updated: 2024/01/03 20:31:46 by laroges          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PIPEX_H
 # define PIPEX_H
 # include "ft_printf.h"
@@ -9,10 +21,6 @@
 # include <unistd.h>
 # include <sys/types.h>
 # include <sys/wait.h>
-
-// compiler avec les flags pour checker les fd : valgrind --leak-check=full --track-fds=yes --trace-children=yes ./pipex /dev/stdin "cat" "ls" /dev/stdout
-//
-// TEST A FAIRE : ./pipex /dev/urandom cat cat /dev/stdout -> Cette Commande doit generer une boucle infinie de caracteres qui s'affichent.
 
 typedef struct s_pipex
 {
@@ -28,22 +36,16 @@ typedef struct s_pipex
 int			check_argv(char **argv);
 int			dup_fd_out(char *file, t_pipex *p, char *cmd);
 int			dup_fd_in(char *file, t_pipex *p, char *cmd);
-//int			get_len_path(char *path);
-//int			get_size(char *path);
-//int			get_size_path(char *path, int index);
-int			parse_commands();
-int			parse_argv();
 int			find_path(char **envp, char *to_find);
-char	*add_backslash(char *path);
-char	**check_backslash(char **paths);
-char	**get_paths(char **envp);
-//char	**path_split(char *path);
-void	child_process(char **argv, char *cmd, int *end, t_pipex *p);
-void	parent_process(char **argv, char *cmd, int *end, t_pipex *p);
-void	clean(char **paths);
-t_pipex	*init_pipex(t_pipex *p);
-void	pipex(char **argv, int *end, t_pipex *p, pid_t pid);
-void	exec_command(char **paths, char *argv, t_pipex *p);
-void	clean_memory();
+char		*add_backslash(char *path);
+char		**check_backslash(char **paths);
+char		**get_paths(char **envp);
+void		check_pipex(t_pipex *p, int *end);
+void		child_process(char **argv, char *cmd, int *end, t_pipex *p);
+void		parent_process(char **argv, char *cmd, int *end, t_pipex *p);
+void		clean(char **paths);
+void		pipex(char **argv, int *end, t_pipex *p, pid_t pid);
+void		exec_command(char **paths, char *argv, t_pipex *p);
+t_pipex		*init_pipex(t_pipex *p);
 
 #endif
