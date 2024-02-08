@@ -16,7 +16,7 @@ t_pipex	*init_pipex(t_pipex *p)
 {
 	p = malloc(sizeof(t_pipex));
 	if (p == NULL)
-		exit(EXIT_FAILURE);
+		exit(errno);
 	p->argv = NULL;
 	p->paths = NULL;
 	p->here_doc = NULL;

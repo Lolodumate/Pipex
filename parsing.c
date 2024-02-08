@@ -17,29 +17,34 @@ int	find_path(char **envp, char *to_find)
 	int		i;
 
 	i = 0;
-	if (to_find == NULL || envp == NULL)
+	if (to_find == NULL)
 		return (-1);
-	while (envp[i])
+	while (envp && envp[i])
 	{
 		if (ft_strncmp(envp[i], to_find, 5) == 0)
 			return (i);
 		i++;
 	}
-	return (0);
+	return (-1);
 }
 
 // Add a backslash at the end of the string if it's necessary;
 char	*add_backslash(char *path)
 {
 	int		len;
+	char	*res;
 
 	len = 0;
+	res = NULL;
 	if (path == NULL)
 		return (NULL);
 	len = ft_strlen(path);
-	if (path[len - 1] != '/')
-		path = ft_strjoin(path, "/");
-	return (path);
+	if (path[len - 1] && path[len - 1] != '/')
+	{
+		res = ft_strjoin(path, "/");
+		free(path);
+	}
+	return (res);
 }
 
 // Check each string to add a blackslash if it's necessary.

@@ -6,13 +6,14 @@
 /*   By: laroges <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/03 20:18:02 by laroges           #+#    #+#             */
-/*   Updated: 2024/01/03 20:30:55 by laroges          ###   ########.fr       */
+/*   Updated: 2024/02/06 17:17:30 by laroges          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <stdio.h>
 
-void	clean(char **str)
+void	free_str(char **str)
 {
 	int		i;
 
@@ -20,25 +21,9 @@ void	clean(char **str)
 	while (str[i])
 	{
 		free(str[i]);
+		str[i] = NULL;
 		i++;
 	}
 	free(str);
-}
-
-void	check_pipex(t_pipex *p, int *end)
-{
-	if (p->paths == NULL)
-	{
-		free(p);
-		exit(EXIT_FAILURE);
-	}
-	if (pipe(end) == -1)
-	{
-		perror("Error pipe\n");
-		clean(p->paths);
-		free(p);
-		close(end[0]);
-		close(end[1]);
-		exit(EXIT_FAILURE);
-	}
+	str = NULL;
 }
