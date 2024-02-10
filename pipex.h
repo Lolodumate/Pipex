@@ -34,27 +34,28 @@ typedef struct s_pipex
 	char	**outfile_cmd;
 }	t_pipex;
 
-// free.c
+// init.c
+t_pipex		*init_pipex(t_pipex *p);
+
+// clean_memory.c
 void		free_str(char **str);
 
-// error.c
+// utils.c
 void		ft_error(t_pipex *p, char *msg);
+void		check_pipex(t_pipex *p, int *end);
+void		exec_command(char **paths, char *argv, t_pipex *p);
 
-int			check_argv(char **argv);
-int			dup_fd_out(char *file, t_pipex *p, char *cmd);
-int			dup_fd_in(char *file, t_pipex *p, char *cmd);
+// parsing.c
 int			find_path(char **envp, char *to_find);
 char		*add_backslash(char *path);
 
 char		**check_backslash(char **paths);
 char		**get_paths(char **envp);
-void		check_pipex(t_pipex *p, int *end);
+
 void		child_process(char **argv, char *cmd, int *end, t_pipex *p);
 void		parent_process(char **argv, char *cmd, int *end, t_pipex *p);
 
+// pipex.c
 void		pipex(char **argv, int *end, t_pipex *p, pid_t pid);
-void		exec_command(char **paths, char *argv, t_pipex *p);
-void		ft_dup(int oldfd, int newfd);
-t_pipex		*init_pipex(t_pipex *p);
 
 #endif
